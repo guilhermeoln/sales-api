@@ -1,4 +1,5 @@
 import Employee from "../models/Employee";
+import employeeValidation from "../validations/employeeValidation";
 
 class EmployeeController {
   async employees(_, res) {
@@ -14,14 +15,9 @@ class EmployeeController {
 
   async createEmployee(req, res) {
     try {
-      const { name, email } = req.body;
+      await employeeValidation.validate(req.body);
 
-      const params = {
-        name,
-        email,
-      };
-
-      const employee = await Employee.create(params);
+      const employee = await Employee.create(req.body);
 
       res.json(employee);
     } catch (error) {

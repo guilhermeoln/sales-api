@@ -1,5 +1,6 @@
 import Employee from "../models/Employee";
 import Sale from "../models/Sale";
+import saleValidation from "../validations/saleValidation";
 
 class SaleController {
   async sales(_, res) {
@@ -15,21 +16,14 @@ class SaleController {
 
   async createSale(req, res) {
     try {
-      const { date, price, products, employee } = req.body;
-      const selectedEmployee = await Employee.findById(employee);
-
-      const params = {
-        date,
-        price,
-        products,
-        employee,
-      };
+      await saleValidation.validate(req.body);
+      const selectedEmployee = await Employee.findById(req.body.employee);
 
       if (!selectedEmployee) {
         return res.status(400).json({ error: "Funcionário não existe" });
       }
 
-      const sale = await Sale.create(params);
+      const sale = await Sale.create(req.body);
 
       res.json(sale);
     } catch (error) {
