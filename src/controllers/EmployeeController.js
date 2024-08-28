@@ -2,22 +2,32 @@ import Employee from "../models/Employee";
 
 class EmployeeController {
   async employees(_, res) {
-    const allEmployees = await Employee.find();
+    try {
+      const allEmployees = await Employee.find();
 
-    res.json(allEmployees);
+      res.json(allEmployees);
+    } catch (error) {
+      const { message } = error;
+      res.status(500).json({ message });
+    }
   }
 
   async createEmployee(req, res) {
-    const { name, email } = req.body;
+    try {
+      const { name, email } = req.body;
 
-    const params = {
-      name,
-      email,
-    };
+      const params = {
+        name,
+        email,
+      };
 
-    const employee = await Employee.create(params);
+      const employee = await Employee.create(params);
 
-    res.json(employee);
+      res.json(employee);
+    } catch (error) {
+      const { message } = error;
+      res.status(500).json(message);
+    }
   }
 
   async deleteEmployee(req, res) {
@@ -33,15 +43,20 @@ class EmployeeController {
   }
 
   async employeeById(req, res) {
-    const { id } = req.params;
+    try {
+      const { id } = req.params;
 
-    const { employee } = await Employee.findById(id);
+      const { employee } = await Employee.findById(id);
 
-    if (!employee) {
-      return res.status(500).json({ message: "Funcionário não encontrado" });
+      if (!employee) {
+        return res.status(500).json({ message: "Funcionário não encontrado" });
+      }
+
+      res.json(employee);
+    } catch (error) {
+      const { message } = error;
+      res.status(500).json(message);
     }
-
-    res.json(employee);
   }
 }
 
